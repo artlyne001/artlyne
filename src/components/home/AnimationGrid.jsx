@@ -14,19 +14,19 @@ const iconMap = {
 
 const AnimationCard = ({ animation, onAction }) => {
     const { title, lottieSrc, iconName, color, category } = animation;
-    // Fix path: /api/uploads -> /uploads if needed, or use as is if proxy exists. 
+    // Fix path: /api/uploads -> /uploads if needed, or use as is if proxy exists.
     // Based on FS, it is in public/uploads. So we replace /api/uploads with /uploads.
     const cleanSrc = lottieSrc ? lottieSrc.replace('/api/uploads', '/uploads') : null;
-    
+
     // Icon fallback
-    const Icon = iconName ? iconMap[iconName] : Monitor; 
+    const Icon = iconName ? iconMap[iconName] : Monitor;
     // Extract base color name (e.g. "text-blue-500" -> "blue")
     const colorBase = color ? color.replace('text-', '').split('-')[0] : 'gray';
 
     return (
-        <div className="bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col group h-full">
+        <div className="bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col group h-80 w-full">
             {/* Preview Area */}
-            <div className={`bg-${colorBase}-50/60 rounded-[1.5rem] aspect-4/3 mb-6 relative overflow-hidden flex items-center justify-center`}>
+            <div className={`bg-${colorBase}-50/60 rounded-[1.5rem] aspect-square mb-4 relative overflow-hidden flex items-center justify-center`}>
                 <div className={`absolute inset-0 bg-${colorBase}-100/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
 
                 {/* Content */}
@@ -36,46 +36,40 @@ const AnimationCard = ({ animation, onAction }) => {
                             src={cleanSrc}
                             loop
                             autoplay
-                            className="w-full h-full"
+                            className="w-full h-full max-w-[85%] max-h-[85%] object-contain"
                         />
                     ) : (
-                        <div className="p-6 bg-white rounded-2xl shadow-sm transform group-hover:scale-105 transition-transform duration-300">
-                             <Icon className={`w-12 h-12 ${color}`} />
+                        <div className="p-4 bg-white rounded-2xl shadow-sm transform group-hover:scale-105 transition-transform duration-300">
+                             <Icon className={`w-10 h-10 ${color}`} />
                         </div>
                     )}
                 </div>
 
                 {/* Badge */}
-                <div className="absolute top-4 right-4">
-                    <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
-                        category === 'Premium' ? 'bg-amber-100 text-amber-600' : 
-                        category === 'New' ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-500'
+                <div className="absolute top-2 right-2 z-20">
+                    <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm ${
+                        category === 'Premium' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                        category === 'New' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
+                        'bg-gray-100 text-gray-600 border border-gray-200'
                     }`}>
                         {category}
                     </span>
                 </div>
             </div>
 
-            <div className="px-2 pb-2 text-center flex-1 flex flex-col justify-between">
-                <div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">{title}</h3>
-                </div>
-
-                <div className="mt-4 space-y-3">
+            <div className="px-2 pb-2 text-center flex-1 flex flex-col justify-end">
+                <div className="mt-auto space-y-2">
                      {/* Attributes/Format (Static for now as mostly generic) */}
                     <div className="flex justify-center gap-2 text-xs text-muted-foreground">
                         <span>JSON</span> • <span>Lottie</span> • <span>MP4</span>
                     </div>
 
-                    <button 
+                    <button
                         onClick={() => onAction(animation)}
-                        className="w-full py-3 rounded-full bg-brand-pink text-white font-bold text-sm hover:bg-brand-pink-hover transition-all shadow-lg shadow-brand-pink/20 hover:shadow-brand-pink/40 hover:-translate-y-0.5 active:translate-y-0"
+                        className="w-full py-2.5 rounded-full bg-brand-pink text-white font-bold text-sm hover:bg-brand-pink-hover transition-all shadow-lg shadow-brand-pink/20 hover:shadow-brand-pink/40 hover:-translate-y-0.5 active:translate-y-0"
                     >
                         {category === 'Free' ? 'Download Now' : 'Buy Now'}
                     </button>
-                    {category === 'Premium' && (
-                        <p className="text-xs text-gray-400 font-medium">$15.00</p> 
-                    )}
                 </div>
             </div>
         </div>
@@ -87,10 +81,10 @@ export default function AnimationGrid() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedAnimation, setSelectedAnimation] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    
+
     // Simple filter
-    const filteredAnimations = animationsData.filter(a => 
-        a.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const filteredAnimations = animationsData.filter(a =>
+        a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (a.category && a.category.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
@@ -100,12 +94,12 @@ export default function AnimationGrid() {
     };
 
     return (
-        <section className="pb-6 px-6 md:px-[90px] bg-white">
+        <section className="pb-6 px-6 md:px-22.5 bg-white">
             <div className="max-w-7xl mx-auto">
-                <CollectionModal 
-                    isOpen={isModalOpen} 
-                    onClose={() => setIsModalOpen(false)} 
-                    item={selectedAnimation} 
+                <CollectionModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    item={selectedAnimation}
                 />
 
                 {/* Search Section Header */}
@@ -136,7 +130,7 @@ export default function AnimationGrid() {
 
                 {/* Animations Grid */}
                 {filteredAnimations.length > 0 ? (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5 mb-16">
                         {filteredAnimations.map((anim) => (
                             <AnimationCard key={anim.id} animation={anim} onAction={handleAction} />
                         ))}
@@ -146,13 +140,13 @@ export default function AnimationGrid() {
                         <p className="text-xl text-gray-400">No animations found matching your search.</p>
                      </div>
                 )}
-                
+
                 <div className="text-center mb-12 mt-4">
                      <div className="inline-flex items-center justify-center p-px rounded-full bg-linear-to-r from-purple-500 via-brand-pink to-orange-500 shadow-lg shadow-purple-500/20">
                         <div className="px-8 py-3 bg-white rounded-full">
                             <p className="text-base font-bold bg-clip-text text-transparent bg-linear-to-r from-purple-600 to-brand-pink flex items-center gap-2">
-                                <span className="text-xl">✨</span> 
-                                More Premium Animations Dropping soon! 
+                                <span className="text-xl">✨</span>
+                                More Premium Animations Dropping soon!
                                 <span className="text-xl">✨</span>
                             </p>
                         </div>

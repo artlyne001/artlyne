@@ -44,12 +44,12 @@ export default function CollectionModal({ isOpen, onClose, item }) {
 
     const handleCopy = (type) => {
         // Mock copy content
-        const content = type === 'json' 
+        const content = type === 'json'
             ? JSON.stringify({ animation: item.title, color: selectedColor }, null, 2)
             : `<div class="animetrix-player" data-src="${item.title}" data-color="${selectedColor}"></div>`;
-            
+
         navigator.clipboard.writeText(content);
-        
+
         if (type === 'json') {
             setCopiedJson(true);
             setTimeout(() => setCopiedJson(false), 2000);
@@ -72,16 +72,16 @@ export default function CollectionModal({ isOpen, onClose, item }) {
     return (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
             {/* Backdrop */}
-            <div 
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
+            <div
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
             {/* Modal Content */}
-            <div className="relative bg-white dark:bg-zinc-900 w-full max-w-[900px] h-auto max-h-[90vh] lg:h-[600px] rounded-3xl shadow-2xl flex flex-col lg:flex-row overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                
+            <div className="relative bg-white dark:bg-zinc-900 w-full max-w-225 h-auto max-h-[90vh] lg:h-[600px] rounded-3xl shadow-2xl flex flex-col lg:flex-row overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+
                 {/* Close Button */}
-                <button 
+                <button
                     onClick={onClose}
                     className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-secondary/80 hover:bg-secondary flex items-center justify-center transition-colors"
                 >
@@ -95,7 +95,7 @@ export default function CollectionModal({ isOpen, onClose, item }) {
                             <h2 className="text-2xl font-bold text-foreground">
                                 {item?.title || "Jolly Animated Loader Animation"}
                             </h2>
-                             <button 
+                             <button
                                 onClick={() => setIsLiked(!isLiked)}
                                 className={`mt-2 transition-colors flex items-center gap-2 text-sm font-medium ${isLiked ? "text-red-500" : "text-muted-foreground hover:text-red-500"}`}
                             >
@@ -103,16 +103,16 @@ export default function CollectionModal({ isOpen, onClose, item }) {
                                 {isLiked ? "Saved to Favorites" : "Add to Favorites"}
                             </button>
                         </div>
-                        
+
                         <div className="flex gap-3 w-full lg:w-auto">
-                            <button 
+                            <button
                                 onClick={() => handleCopy('json')}
                                 className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-full border border-green-200 bg-green-50 text-green-700 text-xs font-bold hover:bg-green-100 transition-colors"
                             >
                                 {copiedJson ? <Check size={14} /> : <Copy size={14} />}
                                 {copiedJson ? "Copied!" : "Copy Json"}
                             </button>
-                            <button 
+                            <button
                                 onClick={() => handleCopy('embed')}
                                 className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-full border border-border bg-background text-foreground text-xs font-bold hover:bg-secondary transition-colors"
                             >
@@ -137,10 +137,10 @@ export default function CollectionModal({ isOpen, onClose, item }) {
                                         />
                                     </div>
                                 ) : item?.icon ? (
-                                    <item.icon 
-                                        size={140} 
+                                    <item.icon
+                                        size={140}
                                         style={{ color: selectedColor }}
-                                        className="drop-shadow-2xl transition-all duration-500" 
+                                        className="drop-shadow-2xl transition-all duration-500"
                                     />
                                 ) : (
                                     <div className="w-40 h-40 bg-brand-pink rounded-full opacity-20" />
@@ -166,7 +166,7 @@ export default function CollectionModal({ isOpen, onClose, item }) {
 
                     {/* Footer / Downloads */}
                     <div className="mt-8 flex items-center justify-end gap-4 border-t border-border pt-6">
-                        <button 
+                        <button
                             onClick={handleDownload}
                             disabled={isDownloading}
                             className={`px-8 py-3 bg-brand-pink text-white font-bold rounded-xl shadow-lg shadow-brand-pink/25 transition-all flex items-center gap-2

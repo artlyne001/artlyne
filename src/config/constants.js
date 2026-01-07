@@ -17,9 +17,9 @@ export const SITE_CONFIG = {
     ],
     navLinks: [
         { label: "Lottie", href: "/collections" },
-        { label: "Png", href: "#" },
-        { label: "Illustration", href: "#" },
-        { label: "Icon", href: "#" },
+        { label: "Png", href: "/png" },
+        { label: "Illustration", href: "/illustration" },
+        { label: "Icon", href: "/icon" },
     ],
     hero: {
         titleLine1: "Motion That",
@@ -37,7 +37,7 @@ export const SITE_CONFIG = {
         { platform: "Linkedin", href: "#" },
     ],
     footer: {
-        copyright: "© 2025 Animetrix. All right reserved",
+        copyright: `© ${new Date().getFullYear()} Animetrix. All right reserved`,
         bottomLinks: [
             { label: "Privacy", href: "#" },
             { label: "Terms", href: "#" },

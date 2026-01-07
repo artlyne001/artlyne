@@ -2,9 +2,9 @@
 
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { 
-    Search, 
-    Image as ImageIcon, Filter, X
+import {
+    Search,
+    Image as ImageIcon, Filter, X, ChevronLeft, ChevronRight, Grid3X3, Grid2X2, LayoutGrid
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -12,23 +12,29 @@ import CollectionModal from "@/components/common/CollectionModal";
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import { getIcon } from "@/lib/iconMap";
 
+// Firebase Imports
+import { db } from "@/lib/firebase";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+
+import animationsData from "@/data/animations.json"; // Keep as fallback or seed
+
 // Mock Data for Sidebar
-const filters = ["Free", "Premium", "Exclusive", "New"];
+const filters = ["All", "Free", "Premium", "Exclusive", "New"];
 
 const SidebarContent = ({ activeFilter, setActiveFilter }) => (
-    <div className="space-y-12">
+    <div className="space-y-8 p-4 border border-emerald-200 rounded-lg bg-linear-to-br from-emerald-50 to-green-50 shadow-sm">
         {/* Filters */}
         <div>
-            <h3 className="text-brand-pink font-bold text-lg mb-6">Filters</h3>
-            <div className="flex flex-wrap gap-3">
+            <h3 className="text-emerald-600 font-bold text-base mb-4">Filters</h3>
+            <div className="flex flex-wrap gap-2">
                 {filters.map((f, i) => (
-                    <button 
-                        key={i} 
+                    <button
+                        key={i}
                         onClick={() => setActiveFilter(f)}
-                        className={`px-4 py-1.5 rounded-full border text-sm transition-all hover:scale-105 active:scale-95
-                        ${activeFilter === f 
-                            ? 'bg-brand-pink text-white border-brand-pink shadow-md shadow-brand-pink/20' 
-                            : 'bg-background border-border hover:border-brand-pink/50 hover:text-brand-pink'}`}
+                        className={`px-3 py-1.5 rounded-full border text-xs transition-all hover:scale-105 active:scale-95
+                        ${activeFilter === f
+                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-500/20'
+                            : 'bg-white border-emerald-200 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50'}`}
                     >
                         {f}
                     </button>
@@ -43,59 +49,125 @@ export default function CollectionsPage() {
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("All animations");
-    const [activeFilter, setActiveFilter] = useState("Free");
+    const [activeFilter, setActiveFilter] = useState("All");
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+    const [gridCols, setGridCols] = useState(4); // 2, 3, or 4 columns
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetch('/api/animations')
-            .then(res => res.json())
-            .then(data => setItems(data))
-            .catch(err => console.error(err));
+        const fetchAnimations = async () => {
+            setIsLoading(true);
+            try {
+                // Start with local data
+                let allItems = [...animationsData];
+
+                // Fetch from Firestore
+                try {
+                    const q = query(collection(db, "animations"), orderBy("createdAt", "desc"));
+                    const querySnapshot = await getDocs(q);
+                    const firestoreItems = [];
+                    querySnapshot.forEach((doc) => {
+                        firestoreItems.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Combine - putting new uploads first
+                    allItems = [...firestoreItems, ...allItems];
+                } catch (err) {
+                     console.error("Error connecting to Firebase (check config):", err);
+                     // If firebase fails (e.g. no config), we still show local data
+                }
+
+                setItems(allItems);
+            } catch (error) {
+                console.error("Error loading items:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchAnimations();
     }, []);
 
     const handleItemClick = (item) => {
-        // Create a renderable icon property for the modal to use easily if it expects 'icon' component
-        // But for consistency, we pass the raw object and let the modal handle it, OR we attach the component.
-        // Let's attach the Icon component class to the item for the modal to use immediately if it's a legacy item
-        const modalItem = { 
-            ...item, 
-            icon: item.lottieSrc ? null : getIcon(item.iconName) 
+        const modalItem = {
+            ...item,
+            icon: item.lottieSrc ? null : getIcon(item.iconName)
         };
         setSelectedItem(modalItem);
         setIsModalOpen(true);
     };
 
-    // Simple filtering simulation
+    // Enhanced filtering logic for tab-based filtering
     const getFilteredItems = () => {
         if (!items || items.length === 0) return [];
         let filtered = items;
 
-        if (activeTab === "Popular animations") filtered = items.slice(0, 6);
-        else if (activeTab === "Premium") filtered = items.filter(i => i.category === "Premium");
-        else if (activeTab === "News") filtered = items.filter(i => i.category === "New");
-        // "All animations" returns everything (handled by default init)
-        
+        // Filter by active tab
+        if (activeTab === "Premium") {
+            filtered = items.filter(i => i.category === "Premium");
+        } else if (activeTab === "New") {
+            filtered = items.filter(i => i.category === "New");
+        } else if (activeTab === "Popular animations") {
+            filtered = items.slice(0, 8); // Show first 8 popular items
+        }
+        // "All animations" shows everything
+
+        // Then apply sidebar filter only if not filtering by specific tab category
+        if (activeFilter && activeFilter !== "All" && activeTab === "All animations") {
+            filtered = filtered.filter(item => {
+                if (activeFilter === "Free" && (!item.category || item.category === "Free")) return true;
+                if (activeFilter === "Premium" && item.category === "Premium") return true;
+                if (activeFilter === "Exclusive" && item.category === "Exclusive") return true;
+                if (activeFilter === "New" && item.category === "New") return true;
+                return false;
+            });
+        }
+
         return filtered;
+    };
+
+    // Handle tab change and reset sidebar filter if needed
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        // Reset sidebar filter when switching to specific category tabs
+        if (tab !== "All animations") {
+            setActiveFilter("All");
+        }
     };
 
     const displayedItems = getFilteredItems();
 
+    // Get grid classes based on column count
+    const getGridClasses = () => {
+        const baseClasses = "grid gap-4 lg:gap-5";
+        switch(gridCols) {
+            case 2:
+                return `${baseClasses} grid-cols-1 sm:grid-cols-2`;
+            case 3:
+                return `${baseClasses} grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`;
+            case 4:
+            default:
+                return `${baseClasses} grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5`;
+        }
+    };
+
     return (
         <main className="min-h-screen bg-background text-foreground flex flex-col">
             <Navbar />
-            <CollectionModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
-                item={selectedItem} 
+            <CollectionModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                item={selectedItem}
             />
-            
+
             {/* Mobile Filters Overlay */}
             {isMobileFiltersOpen && (
                 <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm lg:hidden overflow-y-auto">
                     <div className="p-6">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-2xl font-bold">Filters</h2>
-                            <button 
+                            <button
                                 onClick={() => setIsMobileFiltersOpen(false)}
                                 className="p-2 rounded-full bg-secondary hover:bg-brand-pink hover:text-white transition-colors"
                             >
@@ -108,22 +180,51 @@ export default function CollectionsPage() {
             )}
 
             <div className="flex-1 w-full max-w-[1600px] mx-auto pt-[100px] lg:pt-[130px] pb-20 px-6 md:px-12 flex flex-col lg:flex-row gap-12">
-                
-                {/* Sidebar (Desktop) */}
-                <aside className="hidden lg:block w-[280px] shrink-0">
-                    <SidebarContent activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
-                </aside>
+
+                {/* Sidebar Toggle Button */}
+                <div className="hidden lg:flex flex-col items-start gap-4">
+                    <button
+                        onClick={() => setIsSidebarVisible(!isSidebarVisible)}
+                        className="p-2 rounded-lg bg-secondary hover:bg-brand-pink hover:text-white transition-all duration-200 shadow-sm border border-gray-200 hover:border-brand-pink"
+                        title={isSidebarVisible ? "Hide Filters" : "Show Filters"}
+                    >
+                        {isSidebarVisible ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+                    </button>
+
+                    {/* Sidebar (Desktop) */}
+                    <aside className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                        isSidebarVisible ? 'w-[200px] opacity-100' : 'w-0 opacity-0'
+                    } shrink-0`}>
+                        {isSidebarVisible && (
+                            <div className="w-[200px]">
+                                <SidebarContent activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
+                            </div>
+                        )}
+                    </aside>
+                </div>
 
                 {/* Main Content */}
-                <div className="flex-1 w-full">
-                    
-                    {/* Tabs / Header */}
+                <div className={`flex-1 w-full transition-all duration-300 ${
+                    isSidebarVisible ? 'lg:ml-4' : 'lg:ml-0'
+                }`}>
+
+                    {/* Mobile Filter Toggle & Tabs / Header */}
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-border pb-4 gap-4">
-                        <div className="flex items-center gap-8">
-                            {["All animations", "News", "Premium", "Popular animations"].map((tab, i) => (
-                                <button 
+                        <div className="flex items-center gap-4">
+                            {/* Mobile Filter Button */}
+                            <button
+                                onClick={() => setIsMobileFiltersOpen(true)}
+                                className="lg:hidden flex items-center gap-2 px-3 py-2 bg-secondary hover:bg-brand-pink hover:text-white transition-colors rounded-lg border border-gray-200 hover:border-brand-pink"
+                            >
+                                <Filter size={16} />
+                                <span className="text-sm font-medium">Filters</span>
+                            </button>
+
+                            <div className="flex items-center gap-8">
+                            {["All animations", "New", "Premium", "Popular animations"].map((tab, i) => (
+                                <button
                                     key={i}
-                                    onClick={() => setActiveTab(tab)}
+                                    onClick={() => handleTabChange(tab)}
                                     className={`whitespace-nowrap font-medium text-sm transition-colors relative
                                     ${activeTab === tab ? 'text-brand-pink' : 'text-muted-foreground hover:text-foreground'}`}
                                 >
@@ -133,11 +234,16 @@ export default function CollectionsPage() {
                                     )}
                                 </button>
                             ))}
+                            </div>
                         </div>
                     </div>
 
                     {/* Content Grid */}
                     <div className="space-y-12">
+                        {isLoading ? (
+                             <div className="flex justify-center py-20 text-muted-foreground">Loading animations...</div>
+                        ) : (
+                        <>
                         {/* Section 1 */}
                         <div>
                             <div className="mb-4">
@@ -145,15 +251,15 @@ export default function CollectionsPage() {
                                     {activeTab === "All animations" ? "Popular" : activeTab}
                                 </span>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {displayedItems.map((item, i) => {
+                            <div className={getGridClasses()}>
+                                {displayedItems.slice(0, 8).map((item, i) => {
                                     const IconComponent = item.iconName ? getIcon(item.iconName) : null;
                                     return (
-                                        <div key={item.id} onClick={() => handleItemClick(item)} className="group cursor-pointer">
-                                            <div className="w-full aspect-4/3 bg-secondary rounded-2xl mb-4 overflow-hidden relative flex items-center justify-center group-hover:shadow-xl transition-all duration-300 border border-transparent group-hover:border-brand-pink/20">
+                                        <div key={item.id} onClick={() => handleItemClick(item)} className="group cursor-pointer bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 w-full">
+                                            <div className="w-full aspect-square bg-secondary rounded-2xl overflow-hidden relative flex items-center justify-center group-hover:shadow-xl transition-all duration-300 border border-transparent group-hover:border-brand-pink/20">
                                                 {/* If Lottie, render player. If Icon, render Icon. */}
                                                 {item.lottieSrc ? (
-                                                    <div className="w-[80%] h-[80%]">
+                                                    <div className="w-[85%] h-[85%]">
                                                         <DotLottiePlayer
                                                             src={item.lottieSrc}
                                                             loop
@@ -162,31 +268,24 @@ export default function CollectionsPage() {
                                                         />
                                                     </div>
                                                 ) : (
-                                                    <IconComponent size={48} className={`transform group-hover:scale-110 transition-transform duration-300 ${item.color}`} />
+                                                    <IconComponent size={40} className={`transform group-hover:scale-110 transition-transform duration-300 ${item.color}`} />
                                                 )}
-                                                
-                                                {/* Hover Overlay Buttons */}
-                                                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-2">
-                                                     <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-muted-foreground hover:text-brand-pink">
-                                                        <Search size={14} />
-                                                     </div>
-                                                </div>
                                             </div>
-                                            <h4 className="font-semibold text-sm text-foreground group-hover:text-brand-pink transition-colors truncate">{item.title}</h4>
                                         </div>
                                     );
                                 })}
                             </div>
                         </div>
 
-                        {/* Section 2 (Just to fill space like image) */}
+                        {/* Section 2 - Show more filtered items */}
+                        {displayedItems.length > 8 && (
                         <div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {items.slice(0, 8).map((item, i) => {
+                            <div className={getGridClasses()}>
+                                {displayedItems.slice(8, 16).map((item, i) => {
                                     const IconComponent = item.iconName ? getIcon(item.iconName) : null;
                                     return (
-                                        <div key={`dup-${item.id}`} onClick={() => handleItemClick(item)} className="group cursor-pointer">
-                                            <div className="w-full aspect-4/3 bg-secondary rounded-2xl mb-4 overflow-hidden relative flex items-center justify-center group-hover:shadow-xl transition-all duration-300 border border-transparent group-hover:border-brand-pink/20">
+                                        <div key={`section2-${item.id}`} onClick={() => handleItemClick(item)} className="group cursor-pointer bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 w-full">
+                                            <div className="w-full aspect-square bg-secondary rounded-2xl overflow-hidden relative flex items-center justify-center group-hover:shadow-xl transition-all duration-300 border border-transparent group-hover:border-brand-pink/20">
                                                 {item.lottieSrc ? (
                                                      <div className="w-[80%] h-[80%]">
                                                         <DotLottiePlayer
@@ -200,19 +299,26 @@ export default function CollectionsPage() {
                                                     <IconComponent size={48} className={`transform group-hover:scale-110 transition-transform duration-300 ${item.color}`} />
                                                 )}
                                             </div>
-                                            <h4 className="font-semibold text-sm text-foreground group-hover:text-brand-pink transition-colors truncate">{item.title}</h4>
+
                                         </div>
                                     );
                                 })}
-                                {/* Empty/Add New Placeholder */}
-                                <div className="group cursor-pointer border-2 border-dashed border-muted-foreground/20 rounded-2xl aspect-4/3 flex flex-col items-center justify-center hover:border-brand-pink/50 hover:bg-brand-pink/5 transition-all">
-                                    <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-2 group-hover:bg-white transition-colors">
-                                        <span className="text-xl font-light text-muted-foreground">+</span>
+                                {/* Show "View More" only if there are more items */}
+                                {displayedItems.length > 16 && (
+                                <div className="group cursor-pointer bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 w-full">
+                                    <div className="w-full aspect-square border-2 border-dashed border-muted-foreground/20 rounded-2xl flex flex-col items-center justify-center hover:border-brand-pink/50 hover:bg-brand-pink/5 transition-all">
+                                        <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-2 group-hover:bg-white transition-colors">
+                                            <span className="text-xl font-light text-muted-foreground">+</span>
+                                        </div>
+                                        <span className="text-xs font-medium text-muted-foreground">View More</span>
                                     </div>
-                                    <span className="text-xs font-medium text-muted-foreground">View More</span>
                                 </div>
+                                )}
                             </div>
                         </div>
+                        )}
+                        </>
+                        )}
                     </div>
 
                     {/* Bottom CTA */}
@@ -225,7 +331,7 @@ export default function CollectionsPage() {
 
                 </div>
             </div>
-            
+
             <Footer />
         </main>
     );

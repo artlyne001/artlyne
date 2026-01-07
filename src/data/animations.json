@@ -1,10 +1,18 @@
 [
   {
+    "id": "1767510391685",
+    "title": "fight",
+    "color": "text-brand-pink",
+    "category": "Premium",
+    "lottieSrc": "/uploads/1767510391680-flight.json",
+    "iconName": null
+  },
+  {
     "id": "1767283374097",
     "title": "car cleaning",
     "color": "text-blue-500",
     "category": "New",
-    "lottieSrc": "/api/uploads/1767283374089-car cleaning.json",
+    "lottieSrc": "/uploads/1767283374089-car cleaning.json",
     "iconName": null
   },
   {
@@ -12,7 +20,7 @@
     "title": "settings",
     "color": "text-blue-500",
     "category": "New",
-    "lottieSrc": "/api/uploads/1767281029216-settings.json",
+    "lottieSrc": "/uploads/1767281029216-settings.json",
     "iconName": null
   },
   {
@@ -20,7 +28,7 @@
     "title": "files",
     "color": "text-blue-500",
     "category": "New",
-    "lottieSrc": "/api/uploads/1767280977753-files.json",
+    "lottieSrc": "/uploads/1767280977753-files.json",
     "iconName": null
   },
   {
@@ -28,15 +36,7 @@
     "title": "apple",
     "color": "text-blue-500",
     "category": "New",
-    "lottieSrc": "/api/uploads/1767280908251-apple.json",
-    "iconName": null
-  },
-  {
-    "id": "1767273328290",
-    "title": "summa",
-    "color": "text-blue-500",
-    "category": "New",
-    "lottieSrc": "/api/uploads/1767273328287-flight.json",
+    "lottieSrc": "/uploads/1767280908251-apple.json",
     "iconName": null
   }
 ]

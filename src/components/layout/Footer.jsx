@@ -12,9 +12,7 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-16">
                     <div className="col-span-2 lg:col-span-2 space-y-4">
-                        <span className={`text-2xl font-bold bg-clip-text text-transparent ${SITE_CONFIG.theme.gradient}`}>
-                            {SITE_CONFIG.name}
-                        </span>
+                        <img src="/assets/logo.png" alt={SITE_CONFIG.name} className="h-10 w-auto" />
                         <p className="text-gray-400 max-w-xs">
                             {SITE_CONFIG.description}
                         </p>
