@@ -58,30 +58,41 @@ export default function CollectionsPage() {
     useEffect(() => {
         const fetchAnimations = async () => {
             setIsLoading(true);
-            try {
-                // Start with local data
-                let allItems = [...animationsData];
+            
+            // Local data is the baseline
+            let allItems = [...animationsData];
 
-                // Fetch from Firestore
-                try {
+            try {
+                // Create a timeout promise (e.g., 2000ms) to fail fast if Firebase hangs
+                const timeout = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error("Timeout")), 2000)
+                );
+
+                // Check if we actually have a valid DB connection attempt (rudimentary check involving catch)
+                const firestorePromise = async () => {
+                    if (!db) return [];
                     const q = query(collection(db, "animations"), orderBy("createdAt", "desc"));
                     const querySnapshot = await getDocs(q);
-                    const firestoreItems = [];
+                    const items = [];
                     querySnapshot.forEach((doc) => {
-                        firestoreItems.push({ id: doc.id, ...doc.data() });
+                        items.push({ id: doc.id, ...doc.data() });
                     });
-                    
-                    // Combine - putting new uploads first
-                    allItems = [...firestoreItems, ...allItems];
-                } catch (err) {
-                     console.error("Error connecting to Firebase (check config):", err);
-                     // If firebase fails (e.g. no config), we still show local data
+                    return items;
+                };
+
+                // Race the fetch against the timeout
+                const firestoreItems = await Promise.race([firestorePromise(), timeout]);
+                
+                // If successful, merge
+                if (firestoreItems && firestoreItems.length > 0) {
+                     allItems = [...firestoreItems, ...allItems];
                 }
 
-                setItems(allItems);
-            } catch (error) {
-                console.error("Error loading items:", error);
+            } catch (err) {
+                 // SIlently fail on timeout or config error and just show local data
+                 console.warn("Firestore fetch deferred/failed (using local data):", err.message);
             } finally {
+                setItems(allItems);
                 setIsLoading(false);
             }
         };
@@ -148,7 +159,7 @@ export default function CollectionsPage() {
                 return `${baseClasses} grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`;
             case 4:
             default:
-                return `${baseClasses} grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5`;
+                return `${baseClasses} grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5`;
         }
     };
 
@@ -210,7 +221,7 @@ export default function CollectionsPage() {
 
                     {/* Mobile Filter Toggle & Tabs / Header */}
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-border pb-4 gap-4">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 w-full md:w-auto">
                             {/* Mobile Filter Button */}
                             <button
                                 onClick={() => setIsMobileFiltersOpen(true)}
@@ -220,7 +231,7 @@ export default function CollectionsPage() {
                                 <span className="text-sm font-medium">Filters</span>
                             </button>
 
-                            <div className="flex items-center gap-8">
+                            <div className="flex-1 flex items-center gap-8 overflow-x-auto pb-2 md:pb-0 hide-scrollbar mask-linear-fade">
                             {["All animations", "New", "Premium", "Popular animations"].map((tab, i) => (
                                 <button
                                     key={i}

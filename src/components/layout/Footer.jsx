@@ -8,7 +8,7 @@ import { SITE_CONFIG } from "@/config/constants";
 
 export default function Footer() {
     return (
-        <footer className="bg-black text-white pt-24 pb-12 px-12 md:px-[90px]">
+        <footer className="bg-black text-white pt-24 pb-12 px-6 md:px-[90px]">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-16">
                     <div className="col-span-2 lg:col-span-2 space-y-4">

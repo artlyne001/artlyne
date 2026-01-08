@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Animetrix",
+  title: "Artlyne",
   description: "The world's largest free, ready-to-use, customizable animation library",
 };
 

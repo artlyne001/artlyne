@@ -24,7 +24,7 @@ const AnimationCard = ({ animation, onAction }) => {
     const colorBase = color ? color.replace('text-', '').split('-')[0] : 'gray';
 
     return (
-        <div className="bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col group h-80 w-full">
+        <div className="bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col group h-auto w-full">
             {/* Preview Area */}
             <div className={`bg-${colorBase}-50/60 rounded-[1.5rem] aspect-square mb-4 relative overflow-hidden flex items-center justify-center`}>
                 <div className={`absolute inset-0 bg-${colorBase}-100/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
@@ -104,7 +104,7 @@ export default function AnimationGrid() {
 
                 {/* Search Section Header */}
                 <div className="text-center mb-16 space-y-4">
-                    <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground">
+                    <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground">
                         Discover & Download <br className="hidden md:block" />
                         Premium Lottie Animations
                     </h2>
@@ -130,7 +130,7 @@ export default function AnimationGrid() {
 
                 {/* Animations Grid */}
                 {filteredAnimations.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5 mb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4 lg:gap-5 mb-16">
                         {filteredAnimations.map((anim) => (
                             <AnimationCard key={anim.id} animation={anim} onAction={handleAction} />
                         ))}

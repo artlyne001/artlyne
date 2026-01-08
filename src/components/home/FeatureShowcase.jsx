@@ -5,7 +5,7 @@ import { SITE_CONFIG } from "@/config/constants";
 
 export default function FeatureShowcase() {
     return (
-        <section className="py-12 px-12 md:px-[90px] bg-white overflow-hidden">
+        <section className="py-12 px-6 md:px-[90px] bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-extrabold text-foreground tracking-tight">
@@ -15,7 +15,7 @@ export default function FeatureShowcase() {
                 </div>
 
                 {/* Library Grid Mini-Preview (The icons section in the image) */}
-                <div className="grid grid-cols-4 gap-8 max-w-4xl mx-auto mb-32 opacity-80">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto mb-32 opacity-80">
                     {/* Simple placeholders for the icon grid above the duolingo section */}
                     {[...Array(8)].map((_, i) => (
                         <div key={i} className="aspect-square bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center">
@@ -42,7 +42,7 @@ export default function FeatureShowcase() {
                              <img 
                                 src="/assets/duolingo.png" 
                                 alt="Duolingo Interface" 
-                                className="w-full h-[450px] rounded-[2.5rem] shadow-xl border-[6px] border-[#58CC02]"
+                                className="w-full h-auto md:h-[450px] object-cover rounded-[2.5rem] shadow-xl border-[6px] border-[#58CC02]"
                             />
                         </div>
                     </div>

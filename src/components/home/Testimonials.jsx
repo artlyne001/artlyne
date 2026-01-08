@@ -26,7 +26,7 @@ const TestimonialCard = ({ name, role, text, bgClass, avatarColor, imageUrl }) =
 
 export default function Testimonials() {
     return (
-        <section className="py-12 px-12 md:px-[90px] bg-white">
+        <section className="py-12 px-6 md:px-[90px] bg-white">
             <div className="max-w-7xl mx-auto">
                 <h2 className="text-center text-3xl font-extrabold mb-4 font-serif">Teams loves {SITE_CONFIG.name}</h2>
                 <div className="h-1 w-20 bg-brand-pink mx-auto rounded-full mb-16" />

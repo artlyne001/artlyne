@@ -147,11 +147,11 @@ export default function AdminPage() {
         <main className="min-h-screen bg-[#FAFAFA] text-zinc-800 flex flex-col font-sans">
             <Navbar />
 
-            <div className="grow pt-36 pb-24 px-8 md:px-12 max-w-[1400px] mx-auto w-full">
+            <div className="grow pt-36 pb-24 px-6 md:px-12 max-w-[1400px] mx-auto w-full">
 
                 <div className="flex flex-col lg:flex-row gap-8 items-start mb-12">
                     {/* Main Upload Area */}
-                    <div   className="relative bg-[#F9F9F9] border-2 border-dashed border-gray-200 rounded-[40px] h-[500px] flex flex-col items-center justify-center transition-colors hover:bg-gray-50 w-full lg:w-[70%] cursor-pointer"
+                    <div   className="relative bg-[#F9F9F9] border-2 border-dashed border-gray-200 rounded-[40px] h-[350px] md:h-[500px] flex flex-col items-center justify-center transition-colors hover:bg-gray-50 w-full lg:w-[70%] cursor-pointer"
                         onDrop={handleDrop}
                         onDragOver={handleDragOver}
                         onClick={handleAreaClick}

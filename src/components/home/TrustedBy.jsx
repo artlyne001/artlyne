@@ -10,7 +10,7 @@ const CompanyLogo = ({ name }) => (
 
 export default function TrustedBy() {
     return (
-        <section className="pt-4 pb-12 px-12 md:px-[90px] bg-white">
+        <section className="pt-4 pb-12 px-6 md:px-[90px] bg-white">
             <div className="max-w-7xl mx-auto text-center space-y-8">
                 <p className="text-muted-foreground font-medium">
                     Trusted by 12 Million+ Designers & Developers <br />

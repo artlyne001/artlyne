@@ -7,11 +7,11 @@ import { SITE_CONFIG } from "@/config/constants";
 
 export default function Hero() {
     return (
-        <section className="relative pt-[130px] pb-10 px-12 md:px-[90px] overflow-hidden">
+        <section className="relative pt-[130px] pb-10 px-6 md:px-[90px] overflow-hidden">
             <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
                 {/* Left Content */}
                 <div className="space-y-8 text-center lg:text-left mb-25 ">
-                    <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] max-w-[572px]">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] max-w-[572px]">
                         {SITE_CONFIG.hero.titleLine1} <br />
                         <span className={`text-transparent bg-clip-text ${SITE_CONFIG.theme.gradient}`}>
                             {SITE_CONFIG.hero.titleLine2}
@@ -29,7 +29,7 @@ export default function Hero() {
                     <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                         <Link 
                             href="/collections"
-                            className="w-[344px] h-[62px] rounded-[31.18px] border-[0.85px] border-brand-pink bg-brand-pink text-white font-bold text-lg hover:bg-brand-pink-hover transition-all shadow-xl shadow-brand-pink/20 hover:scale-105 active:scale-95 flex items-center justify-center"
+                            className="w-full sm:w-[344px] h-[62px] rounded-[31.18px] border-[0.85px] border-brand-pink bg-brand-pink text-white font-bold text-lg hover:bg-brand-pink-hover transition-all shadow-xl shadow-brand-pink/20 hover:scale-105 active:scale-95 flex items-center justify-center"
                         >
                             {SITE_CONFIG.hero.cta}
                         </Link>

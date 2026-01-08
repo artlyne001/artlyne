@@ -1,10 +1,10 @@
 export const SITE_CONFIG = {
-    name: "Animetrix",
+    name: "Artlyne",
     theme: {
-        primary: "#000000", // Vibrant Indigo
-        primaryHover: "#6246ea", // Deeper Indigo
-        secondary: "#FF8E91", // Soft Coral/Pink
-        gradient: "bg-linear-to-r from-brand-pink to-brand-secondary",
+        primary: "#F50057", // Premium Pink
+        primaryHover: "#D5004B", 
+        secondary: "#651FFF", // Deep Violet
+        gradient: "bg-linear-to-r from-purple-600 to-brand-pink",
     },
     description: "The world's largest library of free and premium Lottie animations. Bring your websites and apps to life with lightweight, scalable animations.",
     trustedBy: [
@@ -37,7 +37,7 @@ export const SITE_CONFIG = {
         { platform: "Linkedin", href: "#" },
     ],
     footer: {
-        copyright: `© ${new Date().getFullYear()} Animetrix. All right reserved`,
+        copyright: `© ${new Date().getFullYear()} Artlyne. All right reserved`,
         bottomLinks: [
             { label: "Privacy", href: "#" },
             { label: "Terms", href: "#" },
