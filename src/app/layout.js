@@ -17,6 +17,8 @@ export const metadata = {
   description: "The world's largest free, ready-to-use, customizable animation library",
 };
 
+import { Providers } from "./providers";
+
 export default function RootLayout({ children }) {
   const themeVars = {
     "--brand-pink": SITE_CONFIG.theme.primary,
@@ -32,7 +34,9 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={themeVars}
       >
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

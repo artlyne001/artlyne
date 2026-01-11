@@ -8,12 +8,13 @@ import { getStorage } from "firebase/storage";
 // You can find this in the Firebase Console -> Project Settings -> General -> Your apps
 /* src/lib/firebase.js */
 const firebaseConfig = {
-  apiKey: "Paste_Your_Key_Here",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "..."
+  apiKey: "AIzaSyAjZ6mUmj0lIpMBUb-3T-dHEX3Qf8ikZ8s",
+  authDomain: "artlynestudio001.firebaseapp.com",
+  projectId: "artlynestudio001",
+  storageBucket: "artlynestudio001.firebasestorage.app",
+  messagingSenderId: "870131793190",
+  appId: "1:870131793190:web:42e50152ab115642a355e7",
+  measurementId: "G-YB4NLQWXCQ"
 };
 
 // Initialize Firebase

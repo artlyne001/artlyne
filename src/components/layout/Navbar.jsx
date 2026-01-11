@@ -4,9 +4,11 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { SITE_CONFIG } from "@/config/constants";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { user, logOut } = useAuth();
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40 shadow-[0px_4px_4px_0px_#A4A4A440]">
@@ -29,11 +31,37 @@ export default function Navbar() {
                     ))}
                 </div>
 
-                {/* Login Button (Desktop) */}
+                {/* Login/User Button (Desktop) */}
                 <div className="hidden md:block">
-                    <button className="w-30 h-9 rounded-[18px] border-[0.47px] border-brand-pink bg-brand-pink text-white text-sm font-bold hover:bg-brand-pink-hover transition-colors shadow-lg shadow-brand-pink/20 flex items-center justify-center gap-2">
-                        {SITE_CONFIG.auth.login}
-                    </button>
+                    {user ? (
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                {user.photoURL ? (
+                                    <img 
+                                        src={user.photoURL} 
+                                        alt={user.displayName || "User"} 
+                                        className="w-9 h-9 rounded-full border border-white/10"
+                                    />
+                                ) : (
+                                    <div className="w-9 h-9 rounded-full bg-brand-pink flex items-center justify-center text-white font-bold border border-white/10">
+                                        {user.email?.[0]?.toUpperCase() || "U"}
+                                    </div>
+                                )}
+                            </div>
+                            <button 
+                                onClick={logOut}
+                                className="text-sm font-medium text-foreground/80 hover:text-brand-pink transition-colors"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <Link href="/login">
+                            <button className="w-30 h-9 rounded-[18px] border-[0.47px] border-brand-pink bg-brand-pink text-white text-sm font-bold hover:bg-brand-pink-hover transition-colors shadow-lg shadow-brand-pink/20 flex items-center justify-center gap-2">
+                                {SITE_CONFIG.auth.login}
+                            </button>
+                        </Link>
+                    )}
                 </div>
 
                 {/* Mobile Menu Toggle */}
@@ -61,14 +89,43 @@ export default function Navbar() {
                         ))}
                     </div>
 
-                    {/* Mobile Login Button */}
+                    {/* Mobile Login/User Button */}
                     <div className="pt-4">
-                        <button
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="w-full h-[44px] rounded-xl bg-brand-pink text-white hover:bg-brand-pink-hover transition-colors font-bold shadow-lg shadow-brand-pink/20 flex items-center justify-center gap-2"
-                        >
-                            {SITE_CONFIG.auth.login}
-                        </button>
+                        {user ? (
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center gap-3 py-2">
+                                     {user.photoURL ? (
+                                        <img 
+                                            src={user.photoURL} 
+                                            alt={user.displayName || "User"} 
+                                            className="w-10 h-10 rounded-full border border-white/10"
+                                        />
+                                    ) : (
+                                        <div className="w-10 h-10 rounded-full bg-brand-pink flex items-center justify-center text-white font-bold border border-white/10">
+                                            {user.email?.[0]?.toUpperCase() || "U"}
+                                        </div>
+                                    )}
+                                    <span className="font-medium">{user.displayName || user.email}</span>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        logOut();
+                                        setIsMobileMenuOpen(false);
+                                    }}
+                                    className="w-full h-[44px] rounded-xl border border-white/20 text-foreground hover:bg-white/5 transition-colors font-bold flex items-center justify-center gap-2"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                                <button
+                                    className="w-full h-[44px] rounded-xl bg-brand-pink text-white hover:bg-brand-pink-hover transition-colors font-bold shadow-lg shadow-brand-pink/20 flex items-center justify-center gap-2"
+                                >
+                                    {SITE_CONFIG.auth.login}
+                                </button>
+                            </Link>
+                        )}
                     </div>
                 </div>
             )}
