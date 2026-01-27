@@ -21,8 +21,9 @@ import { Providers } from "./providers";
 
 export default function RootLayout({ children }) {
   const themeVars = {
-    "--brand-pink": SITE_CONFIG.theme.primary,
-    "--brand-pink-hover": SITE_CONFIG.theme.primaryHover,
+    "--brand-primary": SITE_CONFIG.theme.primary,
+    "--brand-primary-hover": SITE_CONFIG.theme.primaryHover,
+    "--brand-pink": SITE_CONFIG.theme.primary, // Keep for legacy
     "--brand-secondary": SITE_CONFIG.theme.secondary,
     "--primary": SITE_CONFIG.theme.primary,
     "--ring": SITE_CONFIG.theme.primary,

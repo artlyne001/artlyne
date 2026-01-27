@@ -130,7 +130,7 @@ export default function AnimationGrid() {
 
                 {/* Animations Grid */}
                 {filteredAnimations.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4 lg:gap-5 mb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-4 lg:gap-5 mb-16">
                         {filteredAnimations.map((anim) => (
                             <AnimationCard key={anim.id} animation={anim} onAction={handleAction} />
                         ))}

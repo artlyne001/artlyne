@@ -10,8 +10,11 @@ import { Upload, FileText, Plus } from "lucide-react";
 import { db, storage } from "@/lib/firebase";
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AdminPage() {
+    const { user, loading } = useAuth();
+
     const [title, setTitle] = useState("");
     const fileInputRef = useRef(null);
     const [selectedCategory, setSelectedCategory] = useState("Premium");
@@ -28,6 +31,12 @@ export default function AdminPage() {
     const [categories, setCategories] = useState(["Premium", "Free", "Exclusive", "New"]);
     const [newCategory, setNewCategory] = useState("");
     const [isAddingCategory, setIsAddingCategory] = useState(false);
+
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/login');
+        }
+    }, [user, loading, router]);
 
     useEffect(() => {
         // Load categories from Firestore if you want, or keep local for now.
@@ -142,6 +151,14 @@ export default function AdminPage() {
             setIsUploading(false);
         }
     };
+
+    if (loading || !user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-pink"></div>
+            </div>
+        );
+    }
 
     return (
         <main className="min-h-screen bg-[#FAFAFA] text-zinc-800 flex flex-col font-sans">

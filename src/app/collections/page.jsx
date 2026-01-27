@@ -4,7 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import {
     Search,
-    Image as ImageIcon, Filter, X, ChevronLeft, ChevronRight, Grid3X3, Grid2X2, LayoutGrid
+    Image as ImageIcon, Filter, X, ChevronLeft, ChevronRight
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";

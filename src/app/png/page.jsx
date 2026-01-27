@@ -2,7 +2,7 @@
 
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Image, Clock, Bell } from "lucide-react";
+import { Image as ImageIcon, Clock, Bell } from "lucide-react";
 
 export default function PngPage() {
     return (
@@ -14,7 +14,7 @@ export default function PngPage() {
                     {/* Icon */}
                     <div className="flex justify-center">
                         <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center">
-                            <Image className="w-12 h-12 text-blue-600" />
+                            <ImageIcon className="w-12 h-12 text-blue-600" />
                         </div>
                     </div>
 
@@ -31,7 +31,7 @@ export default function PngPage() {
                     {/* Description */}
                     <div className="space-y-8">
                         <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                            We're working hard to bring you an amazing collection of high-quality PNG images.
+                            We&apos;re working hard to bring you an amazing collection of high-quality PNG images.
                             From illustrations to icons, our PNG library will have everything you need for your projects.
                         </p>
 
@@ -39,7 +39,7 @@ export default function PngPage() {
                         <div className="grid md:grid-cols-3 gap-8 mt-16">
                             <div className="p-6 border border-gray-200 rounded-2xl bg-white shadow-sm">
                                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                                    <Image className="w-6 h-6 text-blue-600" />
+                                    <ImageIcon className="w-6 h-6 text-blue-600" />
                                 </div>
                                 <h3 className="font-semibold text-foreground mb-2">High Quality</h3>
                                 <p className="text-sm text-muted-foreground">Crystal clear PNG images with transparent backgrounds</p>

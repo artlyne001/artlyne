@@ -1,10 +1,10 @@
 export const SITE_CONFIG = {
     name: "Artlyne",
     theme: {
-        primary: "#F50057", // Premium Pink
-        primaryHover: "#D5004B", 
-        secondary: "#651FFF", // Deep Violet
-        gradient: "bg-linear-to-r from-purple-600 to-brand-pink",
+        primary: "#4F46E5", // Professional Indigo
+        primaryHover: "#4338CA", 
+        secondary: "#0EA5E9", // Sky Blue
+        gradient: "bg-linear-to-r from-blue-700 to-indigo-600",
     },
     description: "The world's largest library of free and premium Lottie animations. Bring your websites and apps to life with lightweight, scalable animations.",
     trustedBy: [
