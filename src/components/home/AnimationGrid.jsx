@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Monitor, Search, Smartphone, Zap, Heart, Gift, Briefcase, Video, ShoppingBag, Activity, Globe, CreditCard, Box, Database, Terminal, Layers, FlaskConical } from "lucide-react";
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import animationsData from "@/data/animations.json"; // Import data
@@ -14,9 +14,8 @@ const iconMap = {
 
 const AnimationCard = ({ animation, onAction }) => {
     const { title, lottieSrc, iconName, color, category } = animation;
-    // Fix path: /api/uploads -> /uploads if needed, or use as is if proxy exists.
-    // Based on FS, it is in public/uploads. So we replace /api/uploads with /uploads.
-    const cleanSrc = lottieSrc ? lottieSrc.replace('/api/uploads', '/uploads') : null;
+    // cleaned in parent
+    const cleanSrc = lottieSrc;
 
     // Icon fallback
     const Icon = iconName ? iconMap[iconName] : Monitor;
@@ -82,11 +81,17 @@ export default function AnimationGrid() {
     const [selectedAnimation, setSelectedAnimation] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Simple filter
-    const filteredAnimations = animationsData.filter(a =>
-        a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (a.category && a.category.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    // Memoize the filtered and processed animations
+    const filteredAnimations = useMemo(() => {
+        return animationsData.filter(a =>
+            a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (a.category && a.category.toLowerCase().includes(searchTerm.toLowerCase()))
+        ).map(anim => ({
+            ...anim,
+            // Clean paths once here instead of in every card
+            lottieSrc: anim.lottieSrc ? anim.lottieSrc.replace('/api/uploads', '/uploads') : null
+        }));
+    }, [searchTerm]);
 
     const handleAction = (animation) => {
         setSelectedAnimation(animation);

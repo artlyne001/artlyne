@@ -1,7 +1,7 @@
 "use client";
 
 import { X, Heart, Copy, Code, Download, Check, FileJson, FileType } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DotLottiePlayer } from '@dotlottie/react-player';
 
 // Helper to map tailwind text colors to hex for initialization (simplified)
@@ -42,27 +42,49 @@ export default function CollectionModal({ isOpen, onClose, item }) {
 
     if (!isOpen) return null;
 
-    const handleCopy = (type) => {
-        // Mock copy content
-        const content = type === 'json'
-            ? JSON.stringify({ animation: item.title, color: selectedColor }, null, 2)
-            : `<div class="animetrix-player" data-src="${item.title}" data-color="${selectedColor}"></div>`;
+    // Refs to track timeouts for cleanup
+    const copyTimeoutRef = useRef(null);
+    const downloadTimeoutRef = useRef(null);
 
-        navigator.clipboard.writeText(content);
+    // Cleanup timeouts on unmount
+    useEffect(() => {
+        return () => {
+            if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+            if (downloadTimeoutRef.current) clearTimeout(downloadTimeoutRef.current);
+        };
+    }, []);
+
+    const escapeEmbed = (s) => {
+        if (typeof s !== "string") return "";
+        return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    };
+
+    const handleCopy = (type) => {
+        if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+
+        const safeTitle = escapeEmbed(item?.title ?? "");
+        const safeColor = /^#[0-9A-Fa-f]{6}$/.test(selectedColor) ? selectedColor : "#FF2D88";
+        const content = type === 'json'
+            ? JSON.stringify({ animation: item?.title ?? "", color: selectedColor }, null, 2)
+            : `<div class="animetrix-player" data-src="${safeTitle}" data-color="${safeColor}"></div>`;
+
+        navigator.clipboard.writeText(content).catch(err => console.error('Failed to copy:', err));
 
         if (type === 'json') {
             setCopiedJson(true);
-            setTimeout(() => setCopiedJson(false), 2000);
+            copyTimeoutRef.current = setTimeout(() => setCopiedJson(false), 2000);
         } else {
             setCopiedEmbed(true);
-            setTimeout(() => setCopiedEmbed(false), 2000);
+            copyTimeoutRef.current = setTimeout(() => setCopiedEmbed(false), 2000);
         }
     };
 
     const handleDownload = () => {
+        if (downloadTimeoutRef.current) clearTimeout(downloadTimeoutRef.current);
+
         setIsDownloading(true);
         // Simulate download delay
-        setTimeout(() => {
+        downloadTimeoutRef.current = setTimeout(() => {
             setIsDownloading(false);
             // In a real app, this would trigger a file download
             alert(`Downloaded ${item.title} assets in ${selectedColor}`);

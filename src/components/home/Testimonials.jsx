@@ -31,7 +31,7 @@ export default function Testimonials() {
                 <h2 className="text-center text-3xl font-extrabold mb-4 font-serif">Teams loves {SITE_CONFIG.name}</h2>
                 <div className="h-1 w-20 bg-brand-pink mx-auto rounded-full mb-16" />
 
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <TestimonialCard
                         name="Mufi's team"
                         role="Product Design"

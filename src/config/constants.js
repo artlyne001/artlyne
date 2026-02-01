@@ -17,6 +17,7 @@ export const SITE_CONFIG = {
     ],
     navLinks: [
         { label: "Lottie", href: "/collections" },
+        { label: "Preview", href: "/preview" },
         { label: "Png", href: "/png" },
         { label: "Illustration", href: "/illustration" },
         { label: "Icon", href: "/icon" },

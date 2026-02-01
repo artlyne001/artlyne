@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function AdminPage() {
     const { user, loading } = useAuth();
+    const router = useRouter();
 
     const [title, setTitle] = useState("");
     const fileInputRef = useRef(null);
@@ -62,12 +63,38 @@ export default function AdminPage() {
         }
     };
 
+    const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_EXTENSIONS = /\.(json|lottie)$/i;
+
+    const sanitizeFileName = (name) => {
+        const base = name.replace(/^.*[\\/]/, "").replace(/[^a-zA-Z0-9._-]/g, "_");
+        return base || "animation";
+    };
+
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             const selectedFile = e.target.files[0];
+            if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+                setStatus("error");
+                setErrorMessage(`File too large. Max size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB.`);
+                setFile(null);
+                e.target.value = "";
+                return;
+            }
+            if (!ALLOWED_EXTENSIONS.test(selectedFile.name)) {
+                setStatus("error");
+                setErrorMessage("Only .json and .lottie files are allowed.");
+                setFile(null);
+                e.target.value = "";
+                return;
+            }
+            setStatus(null);
+            setErrorMessage("");
             setFile(selectedFile);
-            if (selectedFile.type.includes('image') || selectedFile.type.includes('json')) {
-                 setPreviewUrl(URL.createObjectURL(selectedFile));
+            if (selectedFile.type.includes("json")) {
+                setPreviewUrl(URL.createObjectURL(selectedFile));
+            } else {
+                setPreviewUrl(null);
             }
         }
     };
@@ -77,10 +104,22 @@ export default function AdminPage() {
         e.stopPropagation();
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
             const droppedFile = e.dataTransfer.files[0];
-            setFile(droppedFile);
-             if (droppedFile.type.includes('image')) {
-                 setPreviewUrl(URL.createObjectURL(droppedFile));
+            if (droppedFile.size > MAX_FILE_SIZE_BYTES) {
+                setStatus("error");
+                setErrorMessage(`File too large. Max size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB.`);
+                setFile(null);
+                return;
             }
+            if (!ALLOWED_EXTENSIONS.test(droppedFile.name)) {
+                setStatus("error");
+                setErrorMessage("Only .json and .lottie files are allowed.");
+                setFile(null);
+                return;
+            }
+            setStatus(null);
+            setErrorMessage("");
+            setFile(droppedFile);
+            setPreviewUrl(droppedFile.type?.includes("json") ? URL.createObjectURL(droppedFile) : null);
         }
     };
 
@@ -95,11 +134,9 @@ export default function AdminPage() {
         }
     };
 
-    const router = useRouter();
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!file) {
             setStatus('error');
             setErrorMessage("Please select a file.");
@@ -117,8 +154,13 @@ export default function AdminPage() {
         setErrorMessage("");
 
         try {
-            // 1. Upload File to Firebase Storage
-            const storageRef = ref(storage, `animations/${Date.now()}-${file.name}`);
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                setStatus("error");
+                setErrorMessage(`File too large. Max size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB.`);
+                return;
+            }
+            const safeName = sanitizeFileName(file.name);
+            const storageRef = ref(storage, `animations/${Date.now()}-${safeName}`);
             const snapshot = await uploadBytes(storageRef, file);
             const downloadURL = await getDownloadURL(snapshot.ref);
 
@@ -135,14 +177,14 @@ export default function AdminPage() {
 
             setStatus('success');
             setTimeout(() => {
-                router.push('/'); 
+                router.push('/');
             }, 1000);
 
         } catch (err) {
             console.error("Upload failed: ", err);
             setStatus('error');
             setErrorMessage(err.message || "Upload failed. Check console.");
-            
+
             // Check for missing config error
             if (err.code === 'storage/invalid-argument') {
                  setErrorMessage("Firebase Config missing. Please update src/lib/firebase.js");

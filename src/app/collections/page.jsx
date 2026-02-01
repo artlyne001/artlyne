@@ -6,9 +6,9 @@ import {
     Search,
     Image as ImageIcon, Filter, X, ChevronLeft, ChevronRight
 } from "lucide-react";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import CollectionModal from "@/components/common/CollectionModal";
+import AnimationDropzone from "@/components/preview/AnimationDropzone";
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import { getIcon } from "@/lib/iconMap";
 
@@ -58,15 +58,17 @@ export default function CollectionsPage() {
     useEffect(() => {
         const fetchAnimations = async () => {
             setIsLoading(true);
-            
+
             // Local data is the baseline
             let allItems = [...animationsData];
 
             try {
                 // Create a timeout promise (e.g., 2000ms) to fail fast if Firebase hangs
-                const timeout = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error("Timeout")), 2000)
-                );
+                // Create a timeout promise (e.g., 2000ms) to fail fast if Firebase hangs
+                let timeoutId;
+                const timeout = new Promise((_, reject) => {
+                    timeoutId = setTimeout(() => reject(new Error("Timeout")), 2000);
+                });
 
                 // Check if we actually have a valid DB connection attempt (rudimentary check involving catch)
                 const firestorePromise = async () => {
@@ -82,7 +84,8 @@ export default function CollectionsPage() {
 
                 // Race the fetch against the timeout
                 const firestoreItems = await Promise.race([firestorePromise(), timeout]);
-                
+                clearTimeout(timeoutId);
+
                 // If successful, merge
                 if (firestoreItems && firestoreItems.length > 0) {
                      allItems = [...firestoreItems, ...allItems];
@@ -171,6 +174,12 @@ export default function CollectionsPage() {
                 onClose={() => setIsModalOpen(false)}
                 item={selectedItem}
             />
+
+            {/* JSON Previewer - Industrial Standard */}
+            {/* <section className="max-w-2xl mx-auto w-full my-10">
+                <h2 className="text-xl font-bold mb-4 text-center">Preview Your JSON File</h2>
+                <AnimationDropzone />
+            </section> */}
 
             {/* Mobile Filters Overlay */}
             {isMobileFiltersOpen && (
@@ -264,7 +273,7 @@ export default function CollectionsPage() {
                             </div>
                             <div className={getGridClasses()}>
                                 {displayedItems.slice(0, 8).map((item, i) => {
-                                    const IconComponent = item.iconName ? getIcon(item.iconName) : null;
+                                    const IconComponent = getIcon(item?.iconName);
                                     return (
                                         <div key={item.id} onClick={() => handleItemClick(item)} className="group cursor-pointer bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 w-full">
                                             <div className="w-full aspect-square bg-secondary rounded-2xl overflow-hidden relative flex items-center justify-center group-hover:shadow-xl transition-all duration-300 border border-transparent group-hover:border-brand-pink/20">
@@ -279,7 +288,7 @@ export default function CollectionsPage() {
                                                         />
                                                     </div>
                                                 ) : (
-                                                    <IconComponent size={40} className={`transform group-hover:scale-110 transition-transform duration-300 ${item.color}`} />
+                                                    <IconComponent size={40} className={`transform group-hover:scale-110 transition-transform duration-300 ${item.color || ""}`} />
                                                 )}
                                             </div>
                                         </div>
@@ -293,7 +302,7 @@ export default function CollectionsPage() {
                         <div>
                             <div className={getGridClasses()}>
                                 {displayedItems.slice(8, 16).map((item, i) => {
-                                    const IconComponent = item.iconName ? getIcon(item.iconName) : null;
+                                    const IconComponent = getIcon(item?.iconName);
                                     return (
                                         <div key={`section2-${item.id}`} onClick={() => handleItemClick(item)} className="group cursor-pointer bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 w-full">
                                             <div className="w-full aspect-square bg-secondary rounded-2xl overflow-hidden relative flex items-center justify-center group-hover:shadow-xl transition-all duration-300 border border-transparent group-hover:border-brand-pink/20">
@@ -307,7 +316,7 @@ export default function CollectionsPage() {
                                                         />
                                                     </div>
                                                 ) : (
-                                                    <IconComponent size={48} className={`transform group-hover:scale-110 transition-transform duration-300 ${item.color}`} />
+                                                    <IconComponent size={48} className={`transform group-hover:scale-110 transition-transform duration-300 ${item.color || ""}`} />
                                                 )}
                                             </div>
 

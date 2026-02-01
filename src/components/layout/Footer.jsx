@@ -18,15 +18,7 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    {/* <div className="space-y-4">
-                        <h4 className="font-bold text-lg">Product</h4>
-                        <ul className="space-y-2 text-gray-400">
-                            <li><a href="#" className="hover:text-white transition-colors">Discover</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Editor</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Plugins</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Marketplace</a></li>
-                        </ul>
-                    </div> */}
+
 
                     <div className="space-y-4">
                         <h4 className="font-bold text-lg">Company</h4>

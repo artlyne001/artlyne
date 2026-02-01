@@ -29,6 +29,10 @@ export default function LoginPage() {
 
     const handleEmailSignIn = async (e) => {
         e.preventDefault();
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters");
+            return;
+        }
         try {
             await emailSignIn(email, password);
         } catch (error) {
@@ -40,7 +44,7 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen pt-20 flex items-center justify-center relative overflow-hidden bg-background">
-            
+
             {/* Ambient Background Effects */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-primary/20 rounded-full blur-[120px] animate-pulse" />
@@ -48,10 +52,10 @@ export default function LoginPage() {
             </div>
 
             <div className="w-full max-w-md relative z-10 px-6">
-                
+
                 {/* Main Card */}
                 <div className="bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 p-8 md:p-10 rounded-3xl shadow-2xl shadow-brand-primary/5">
-                    
+
                     {/* Header */}
                     <div className="text-center mb-10">
                         <div className="w-16 h-16 bg-linear-to-tr from-brand-primary to-brand-secondary rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand-primary/20 transform rotate-3">
@@ -76,7 +80,7 @@ export default function LoginPage() {
                     <button
                         onClick={handleGoogleSignIn}
                         className="w-full bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/10 text-foreground border border-gray-200 dark:border-white/10 h-14 rounded-2xl font-semibold flex items-center justify-center gap-3 transition-all duration-200 group relative overflow-hidden"
-                    >   
+                    >
                         <div className="relative z-10 flex items-center gap-3">
                             <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
                                 <path
@@ -154,7 +158,7 @@ export default function LoginPage() {
                         </Link>
                     </p>
                 </div>
-                
+
                 {/* Footer Links */}
                 <div className="mt-8 flex justify-center gap-6 text-xs text-muted-foreground/60">
                     <a href="#" className="hover:text-brand-primary transition-colors">Terms of Service</a>
