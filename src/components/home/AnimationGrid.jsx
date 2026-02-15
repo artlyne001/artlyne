@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Monitor, Search, Smartphone, Zap, Heart, Gift, Briefcase, Video, ShoppingBag, Activity, Globe, CreditCard, Box, Database, Terminal, Layers, FlaskConical } from "lucide-react";
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import animationsData from "@/data/animations.json"; // Import data
 import CollectionModal from "@/components/common/CollectionModal"; // Import Modal
+import { db } from "@/lib/firebase";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
 // Map icon names to components
 const iconMap = {
@@ -13,12 +15,18 @@ const iconMap = {
 };
 
 const AnimationCard = ({ animation, onAction }) => {
-    const { title, lottieSrc, iconName, color, category } = animation;
-    // cleaned in parent
-    const cleanSrc = lottieSrc;
+    // Check if animation has lottieSrc (dynamic) or needs to be constructed (static) 
+    // Actually the static ones might have different structure, let's normalize in the parent or handle here.
+    // The current static data seems to use 'lottieSrc' as well based on the filter code below.
+    
+    // Safety check for animation object
+    if (!animation) return null;
 
+    const { title, lottieSrc, iconName, color, category } = animation;
+    
     // Icon fallback
-    const Icon = iconName ? iconMap[iconName] : Monitor;
+    const Icon = iconName ? (iconMap[iconName] || Monitor) : Monitor;
+    
     // Extract base color name (e.g. "text-blue-500" -> "blue")
     const colorBase = color ? color.replace('text-', '').split('-')[0] : 'gray';
 
@@ -30,9 +38,9 @@ const AnimationCard = ({ animation, onAction }) => {
 
                 {/* Content */}
                 <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
-                     {cleanSrc ? (
+                     {lottieSrc ? (
                         <DotLottiePlayer
-                            src={cleanSrc}
+                            src={lottieSrc}
                             loop
                             autoplay
                             className="w-full h-full max-w-[85%] max-h-[85%] object-contain"
@@ -51,12 +59,13 @@ const AnimationCard = ({ animation, onAction }) => {
                         category === 'New' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
                         'bg-gray-100 text-gray-600 border border-gray-200'
                     }`}>
-                        {category}
+                        {category || 'New'}
                     </span>
                 </div>
             </div>
 
             <div className="px-2 pb-2 text-center flex-1 flex flex-col justify-end">
+                 <h3 className="text-sm font-bold text-gray-800 mb-1 line-clamp-1">{title}</h3>
                 <div className="mt-auto space-y-2">
                      {/* Attributes/Format (Static for now as mostly generic) */}
                     <div className="flex justify-center gap-2 text-xs text-muted-foreground">
@@ -80,18 +89,44 @@ export default function AnimationGrid() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedAnimation, setSelectedAnimation] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [firestoreAnimations, setFirestoreAnimations] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAnimations = async () => {
+            try {
+                const q = query(collection(db, "animations"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                const animations = [];
+                querySnapshot.forEach((doc) => {
+                    animations.push({ id: doc.id, ...doc.data() });
+                });
+                setFirestoreAnimations(animations);
+            } catch (error) {
+                console.error("Error fetching animations:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAnimations();
+    }, []);
 
     // Memoize the filtered and processed animations
     const filteredAnimations = useMemo(() => {
-        return animationsData.filter(a =>
-            a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        // Merge static and dynamic animations
+        const allAnimations = [...firestoreAnimations, ...animationsData];
+
+        return allAnimations.filter(a =>
+            (a.title && a.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (a.category && a.category.toLowerCase().includes(searchTerm.toLowerCase()))
         ).map(anim => ({
             ...anim,
-            // Clean paths once here instead of in every card
-            lottieSrc: anim.lottieSrc ? anim.lottieSrc.replace('/api/uploads', '/uploads') : null
+            // Clean paths if needed, though Firestore URLs handled by manual upload might not need it
+            // ensuring we handle both /api/uploads and direct /uploads or http URLs
+             lottieSrc: anim.lottieSrc ? (anim.lottieSrc.startsWith('http') || anim.lottieSrc.startsWith('/') ? anim.lottieSrc : anim.lottieSrc.replace('/api/uploads', '/uploads')) : null
         }));
-    }, [searchTerm]);
+    }, [searchTerm, firestoreAnimations]);
 
     const handleAction = (animation) => {
         setSelectedAnimation(animation);

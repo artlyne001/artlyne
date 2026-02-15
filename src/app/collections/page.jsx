@@ -4,11 +4,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import {
     Search,
-    Image as ImageIcon, Filter, X, ChevronLeft, ChevronRight
+    Filter, X, ChevronLeft, ChevronRight
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import CollectionModal from "@/components/common/CollectionModal";
-import AnimationDropzone from "@/components/preview/AnimationDropzone";
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import { getIcon } from "@/lib/iconMap";
 

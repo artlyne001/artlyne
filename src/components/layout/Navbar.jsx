@@ -7,6 +7,7 @@ import { SITE_CONFIG } from "@/config/constants";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
+
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { user, logOut } = useAuth();

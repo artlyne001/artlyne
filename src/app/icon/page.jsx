@@ -13,14 +13,14 @@ export default function IconPage() {
                 <div className="max-w-4xl mx-auto text-center space-y-12">
                     {/* Icon */}
                     <div className="flex justify-center">
-                        <div className="w-24 h-24 bg-gradient-to-br from-green-100 to-teal-100 rounded-3xl flex items-center justify-center">
+                        <div className="w-24 h-24 bg-linear-to-br from-green-100 to-teal-100 rounded-3xl flex items-center justify-center">
                             <Grid3X3 className="w-12 h-12 text-green-600" />
                         </div>
                     </div>
 
                     {/* Title */}
                     <div className="space-y-6">
-                        <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-teal-600">
+                        <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-linear-to-r from-green-600 to-teal-600">
                             Icon Library
                         </h1>
                         <p className="text-xl md:text-2xl font-semibold text-muted-foreground">
