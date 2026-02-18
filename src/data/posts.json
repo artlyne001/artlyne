@@ -1,0 +1,35 @@
+[
+    {
+        "id": "1",
+        "title": "Top 10 Lottie Animations for 2024",
+        "excerpt": "Discover the trending animation styles that are captivating users this year. From 3D minimalism to liquid motion.",
+        "content": "Full content would go here...",
+        "author": "Sarah Design",
+        "date": "2024-03-15",
+        "category": "Trends",
+        "image": "/blog/trends-2024.jpg",
+        "slug": "top-10-lottie-animations-2024"
+    },
+    {
+        "id": "2",
+        "title": "Optimizing Lottie Performance",
+        "excerpt": "Learn how to reduce file size without sacrificing quality. A deep dive into vector complexity and frame rates.",
+        "content": "Full content would go here...",
+        "author": "Dev Mike",
+        "date": "2024-03-10",
+        "category": "Technical",
+        "image": "/blog/optimization.jpg",
+        "slug": "optimizing-lottie-performance"
+    },
+    {
+        "id": "3",
+        "title": "Motion Design in UI/UX",
+        "excerpt": "Why micro-interactions matter more than you think. Enhancing user experience through subtle motion.",
+        "content": "Full content would go here...",
+        "author": "UX Jane",
+        "date": "2024-03-05",
+        "category": "Design",
+        "image": "/blog/ui-ux-motion.jpg",
+        "slug": "motion-design-ui-ux"
+    }
+]

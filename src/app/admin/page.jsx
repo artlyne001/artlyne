@@ -190,6 +190,11 @@ export default function AdminPage() {
         setErrorMessage("");
 
         try {
+            // Guard clause for missing storage
+            if (!storage && !manualUrlMode) {
+                throw new Error("Firebase Storage is not initialized. Check your API keys in .env.local");
+            }
+
             let downloadURL = manualUrl;
 
             // Only upload if NOT in manual mode

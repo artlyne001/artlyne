@@ -3,10 +3,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { Monitor, Search, Smartphone, Zap, Heart, Gift, Briefcase, Video, ShoppingBag, Activity, Globe, CreditCard, Box, Database, Terminal, Layers, FlaskConical } from "lucide-react";
 import { DotLottiePlayer } from '@dotlottie/react-player';
-import animationsData from "@/data/animations.json"; // Import data
+
 import CollectionModal from "@/components/common/CollectionModal"; // Import Modal
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import animationsData from "@/data/animations.json"; // Import local animations
 
 // Map icon names to components
 const iconMap = {
@@ -94,17 +95,23 @@ export default function AnimationGrid() {
 
     useEffect(() => {
         const fetchAnimations = async () => {
+            let allAnimations = [...animationsData]; // Start with local data
             try {
-                const q = query(collection(db, "animations"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                const animations = [];
-                querySnapshot.forEach((doc) => {
-                    animations.push({ id: doc.id, ...doc.data() });
-                });
-                setFirestoreAnimations(animations);
+                if (db) {
+                     const q = query(collection(db, "animations"), orderBy("createdAt", "desc"));
+                    const querySnapshot = await getDocs(q);
+                    const cloudAnimations = [];
+                    querySnapshot.forEach((doc) => {
+                        cloudAnimations.push({ id: doc.id, ...doc.data() });
+                    });
+                    if (cloudAnimations.length > 0) {
+                        allAnimations = [...cloudAnimations, ...allAnimations];
+                    }
+                }
             } catch (error) {
                 console.error("Error fetching animations:", error);
             } finally {
+                setFirestoreAnimations(allAnimations);
                 setLoading(false);
             }
         };
@@ -114,16 +121,15 @@ export default function AnimationGrid() {
 
     // Memoize the filtered and processed animations
     const filteredAnimations = useMemo(() => {
-        // Merge static and dynamic animations
-        const allAnimations = [...firestoreAnimations, ...animationsData];
+        // Use only Firestore animations
+        const allAnimations = [...firestoreAnimations];
 
         return allAnimations.filter(a =>
             (a.title && a.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (a.category && a.category.toLowerCase().includes(searchTerm.toLowerCase()))
         ).map(anim => ({
             ...anim,
-            // Clean paths if needed, though Firestore URLs handled by manual upload might not need it
-            // ensuring we handle both /api/uploads and direct /uploads or http URLs
+            // Clean paths if needed, ensuring we handle both /api/uploads and direct /uploads or http URLs
              lottieSrc: anim.lottieSrc ? (anim.lottieSrc.startsWith('http') || anim.lottieSrc.startsWith('/') ? anim.lottieSrc : anim.lottieSrc.replace('/api/uploads', '/uploads')) : null
         }));
     }, [searchTerm, firestoreAnimations]);

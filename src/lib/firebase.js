@@ -17,6 +17,7 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
+
 // Initialize Firebase only if the API key is present
 let app;
 let auth;
@@ -32,4 +33,8 @@ if (firebaseConfig.apiKey) {
   console.warn("Firebase API key is missing. Firebase services will not be initialized.");
 }
 
+// Safe export of services
 export { auth, db, storage };
+
+// Helper to check if services are initialized
+export const isFirebaseInitialized = () => !!app;

@@ -267,11 +267,11 @@ export default function CollectionsPage() {
                         <div>
                             <div className="mb-4">
                                 <span className="px-3 py-1 bg-secondary rounded-full text-xs font-medium text-muted-foreground">
-                                    {activeTab === "All animations" ? "Popular" : activeTab}
+                                    {activeTab === "All animations" ? "All Items" : activeTab}
                                 </span>
                             </div>
                             <div className={getGridClasses()}>
-                                {displayedItems.slice(0, 8).map((item, i) => {
+                                {displayedItems.map((item, i) => {
                                     const IconComponent = getIcon(item?.iconName);
                                     return (
                                         <div key={item.id} onClick={() => handleItemClick(item)} className="group cursor-pointer bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 w-full">
@@ -295,47 +295,6 @@ export default function CollectionsPage() {
                                 })}
                             </div>
                         </div>
-
-                        {/* Section 2 - Show more filtered items */}
-                        {displayedItems.length > 8 && (
-                        <div>
-                            <div className={getGridClasses()}>
-                                {displayedItems.slice(8, 16).map((item, i) => {
-                                    const IconComponent = getIcon(item?.iconName);
-                                    return (
-                                        <div key={`section2-${item.id}`} onClick={() => handleItemClick(item)} className="group cursor-pointer bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 w-full">
-                                            <div className="w-full aspect-square bg-secondary rounded-2xl overflow-hidden relative flex items-center justify-center group-hover:shadow-xl transition-all duration-300 border border-transparent group-hover:border-brand-pink/20">
-                                                {item.lottieSrc ? (
-                                                     <div className="w-[80%] h-[80%]">
-                                                        <DotLottiePlayer
-                                                            src={item.lottieSrc}
-                                                            loop
-                                                            autoplay
-                                                            className="w-full h-full object-contain"
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    <IconComponent size={48} className={`transform group-hover:scale-110 transition-transform duration-300 ${item.color || ""}`} />
-                                                )}
-                                            </div>
-
-                                        </div>
-                                    );
-                                })}
-                                {/* Show "View More" only if there are more items */}
-                                {displayedItems.length > 16 && (
-                                <div className="group cursor-pointer bg-white rounded-[2rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 w-full">
-                                    <div className="w-full aspect-square border-2 border-dashed border-muted-foreground/20 rounded-2xl flex flex-col items-center justify-center hover:border-brand-pink/50 hover:bg-brand-pink/5 transition-all">
-                                        <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-2 group-hover:bg-white transition-colors">
-                                            <span className="text-xl font-light text-muted-foreground">+</span>
-                                        </div>
-                                        <span className="text-xs font-medium text-muted-foreground">View More</span>
-                                    </div>
-                                </div>
-                                )}
-                            </div>
-                        </div>
-                        )}
                         </>
                         )}
                     </div>
